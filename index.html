@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCraft | فروشگاه قطعات کامپیوتر</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">⚡</div>
+        <span>PCraft</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">خانه</a>
+        <a href="builder.html" class="nav-link">سیستم‌ساز</a>
+        <a href="#categories" class="nav-link">دسته‌بندی‌ها</a>
+        <a href="#featured" class="nav-link">محصولات</a>
+      </nav>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="جستجوی قطعات...">
+      </div>
+
+      <div class="header-actions">
+        <a href="cart.html" class="icon-btn" title="سبد خرید">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+            <path d="M6 6L5 3H2"/>
+          </svg>
+          <span class="badge cart-badge" style="display:none">0</span>
+        </a>
+        <button class="icon-btn" title="حساب کاربری">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <h1>سیستم ایده‌آل‌ات را با PCraft بساز</h1>
+        <p>
+          با سیستم‌ساز هوشمند PCraft، قطعات سازگار را انتخاب کن و کامپیوتر ایده‌آل خود را مرحله‌به‌مرحله بساز.
+          سازگاری قطعات به‌صورت خودکار بررسی می‌شود.
+        </p>
+        <div class="hero-actions">
+          <a href="builder.html" class="btn btn-primary btn-lg">شروع سیستم‌ساز</a>
+          <a href="#featured" class="btn btn-secondary btn-lg">مشاهده محصولات</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <h3>نمونه سیستم گیمینگ</h3>
+          <p class="text-secondary" style="font-size:0.9rem">Ryzen 7 7800X3D + RTX 4070 SUPER</p>
+          <div class="price">۶۸,۵۰۰,۰۰۰ تومان</div>
+          <div class="hero-specs">
+            <div class="spec-item"><span>پردازنده</span>7800X3D</div>
+            <div class="spec-item"><span>گرافیک</span>RTX 4070 S</div>
+            <div class="spec-item"><span>رم</span>32GB DDR5</div>
+            <div class="spec-item"><span>حافظه</span>2TB NVMe</div>
+          </div>
+          <a href="builder.html" class="btn btn-outline btn-sm" style="margin-top:20px;width:100%">ساخت مشابه</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section" id="categories">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>دسته‌بندی‌ها</h2>
+      </div>
+      <div class="categories-grid" id="categories-grid">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="section" id="featured" style="background: var(--bg-secondary);">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>محصولات پرفروش</h2>
+        <a href="builder.html" class="btn btn-outline btn-sm">مشاهده همه</a>
+      </div>
+      <div class="products-grid" id="featured-products">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- PC Builder CTA -->
+  <section class="section">
+    <div class="section-inner" style="text-align:center; padding: 48px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-xl);">
+      <h2 style="margin-bottom:12px;">سیستم‌ساز هوشمند</h2>
+      <p class="text-secondary" style="max-width:500px; margin:0 auto 28px;">
+        قطعات را مرحله‌به‌مرحله انتخاب کنید. سیستم به‌صورت خودکار سازگاری را بررسی کرده و قیمت را لحظه‌ای محاسبه می‌کند.
+      </p>
+      <a href="builder.html" class="btn btn-primary btn-lg">شروع ساخت سیستم</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">⚡</div>
+          <span>PCraft</span>
+        </a>
+        <p>فروشگاه تخصصی قطعات کامپیوتر با سیستم‌ساز هوشمند و بررسی سازگاری قطعات.</p>
+      </div>
+      <div class="footer-col">
+        <h4>دسترسی سریع</h4>
+        <a href="index.html">خانه</a>
+        <a href="builder.html">سیستم‌ساز</a>
+        <a href="cart.html">سبد خرید</a>
+      </div>
+      <div class="footer-col">
+        <h4>دسته‌بندی</h4>
+        <a href="builder.html">پردازنده</a>
+        <a href="builder.html">کارت گرافیک</a>
+        <a href="builder.html">مادربرد</a>
+        <a href="builder.html">رم</a>
+      </div>
+      <div class="footer-col">
+        <h4>پشتیبانی</h4>
+        <a href="#">تماس با ما</a>
+        <a href="#">سوالات متداول</a>
+        <a href="#">راهنمای خرید</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © ۱۴۰۴ PCraft — طراحی شده با دقت برای علاقه‌مندان سخت‌افزار
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

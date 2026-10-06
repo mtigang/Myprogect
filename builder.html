@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سیستم‌ساز | PCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">⚡</div>
+        <span>PCraft</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link">خانه</a>
+        <a href="builder.html" class="nav-link active">سیستم‌ساز</a>
+        <a href="index.html#categories" class="nav-link">دسته‌بندی‌ها</a>
+      </nav>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="جستجوی قطعات...">
+      </div>
+
+      <div class="header-actions">
+        <a href="cart.html" class="icon-btn" title="سبد خرید">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+            <path d="M6 6L5 3H2"/>
+          </svg>
+          <span class="badge cart-badge" style="display:none">0</span>
+        </a>
+        <button class="icon-btn" title="حساب کاربری">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Builder Layout -->
+  <div class="builder-layout">
+    <div class="builder-main">
+      <!-- Steps -->
+      <div class="builder-steps" id="builder-steps">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Content -->
+      <div class="builder-content">
+        <h2 id="step-title">انتخاب کیس</h2>
+        <p id="step-desc">قطعات ناسازگار غیرفعال شده‌اند. برای سازگارها امتیاز سازگاری نمایش داده می‌شود.</p>
+
+        <div class="compat-alert" id="compat-alert"></div>
+        <div class="builder-filters" id="builder-filters"></div>
+
+        <div class="products-grid" id="products-list">
+          <!-- Filled by JS -->
+        </div>
+
+        <div class="flex justify-between mt-4" style="margin-top: 32px;">
+          <button class="btn btn-secondary" onclick="prevStep()">→ قبلی</button>
+          <button class="btn btn-primary" onclick="nextStep()">بعدی ←</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Summary -->
+    <aside class="builder-sidebar">
+      <div class="build-summary">
+        <div class="build-summary-header">
+          <h3>سیستم شما</h3>
+          <button class="btn btn-sm btn-outline" onclick="clearBuild()" title="پاک کردن همه">پاک کردن</button>
+        </div>
+        <div class="build-list" id="build-list">
+          <!-- Filled by JS -->
+        </div>
+        <div id="benchmark-box" class="benchmark-box"></div>
+        <div id="ai-opinion" class="ai-opinion">
+          <div class="ai-label">نظر هوش مصنوعی PCraft</div>
+          <div class="ai-text">هنوز هیچ قطعه‌ای انتخاب نکردی. از کیس شروع کن تا سیستم‌ت رو قدم‌به‌قدم بسازیم.</div>
+        </div>
+        <div class="build-total">
+          <div class="build-total-row">
+            <span class="build-total-label">مجموع</span>
+            <span class="build-total-price" id="build-total-price">۰ تومان</span>
+          </div>
+          <div class="build-actions">
+            <button class="btn btn-primary" id="checkout-btn" onclick="addBuildToCart()" disabled>
+              افزودن به سبد خرید
+            </button>
+            <button class="btn btn-secondary" onclick="shareBuild()">
+              اشتراک‌گذاری بیلد
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Mobile sticky bar -->
+  <div class="mobile-build-bar">
+    <div>
+      <div style="font-size:0.8rem;color:var(--text-muted)">مجموع سیستم</div>
+      <div class="price" id="mobile-total">۰ تومان</div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="addBuildToCart()">افزودن به سبد</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">⚡</div>
+          <span>PCraft</span>
+        </a>
+        <p>فروشگاه تخصصی قطعات کامپیوتر با سیستم‌ساز هوشمند.</p>
+      </div>
+      <div class="footer-col">
+        <h4>دسترسی سریع</h4>
+        <a href="index.html">خانه</a>
+        <a href="builder.html">سیستم‌ساز</a>
+        <a href="cart.html">سبد خرید</a>
+      </div>
+      <div class="footer-col">
+        <h4>دسته‌بندی</h4>
+        <a href="builder.html">پردازنده</a>
+        <a href="builder.html">کارت گرافیک</a>
+        <a href="builder.html">مادربرد</a>
+      </div>
+      <div class="footer-col">
+        <h4>پشتیبانی</h4>
+        <a href="#">تماس با ما</a>
+        <a href="#">راهنمای خرید</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © ۱۴۰۴ PCraft
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/builder.js"></script>
+</body>
+</html>
