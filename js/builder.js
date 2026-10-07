@@ -136,32 +136,189 @@ function estimateBenchmark() {
 /* ---------- AI Opinion ---------- */
 function getAIOpinion() {
   const parts = Object.values(build).filter(Boolean);
-  if (parts.length === 0) return AI_OPINIONS.empty;
-  if (parts.length < 3) return AI_OPINIONS.partial_low;
-
-  const cpu = build.cpu;
-  const gpu = build.gpu;
-  const psu = build.psu;
+  const step = BUILDER_STEPS[currentStep];
+  const stepKey = step ? step.key : null;
+  const selected = stepKey ? build[stepKey] : null;
   const total = parts.reduce((s, p) => s + p.price, 0);
+  const lines = [];
 
-  if (cpu && gpu) {
-    const diff = (gpu.gamingScore || 70) - (cpu.gamingScore || 70);
-    if (diff > 15) return AI_OPINIONS.bottleneck_cpu;
-    if (diff < -15) return AI_OPINIONS.bottleneck_gpu;
+  // --- Empty build ---
+  if (parts.length === 0) {
+    return `سلام! من دستیار هوشمند PCraft هستم و قدم‌به‌قدم همراهت می‌مونم.
+
+الان هیچ قطعه‌ای انتخاب نشده. پیشنهاد می‌کنم از <strong>کیس</strong> شروع کنی؛ چون اندازه و محدودیت‌های کیس (طول GPU، ارتفاع کولر، فرم‌فکتور مادربرد) روی همه انتخاب‌های بعدی تأثیر می‌ذاره و از انتخاب اشتباه جلوگیریه.
+
+بعد از انتخاب هر قطعه، اینجا برات توضیح می‌دم چه تأثیری داره و مرحله بعد چی باید حواست باشه.`;
   }
 
-  if (gpu && (!psu || psu.wattage < gpu.recommendedPsu)) return AI_OPINIONS.incomplete_psu;
+  // --- Step-specific commentary when something is selected on current step ---
+  if (selected && stepKey === 'case') {
+    lines.push(`کیس <strong>${selected.name}</strong> انتخاب شد.`);
+    lines.push(`این کیس از فرم‌فکتورهای ${selected.formFactor.join('، ')} پشتیبانی می‌کنه، حداکثر طول کارت گرافیک ${selected.maxGpuLength}mm و حداکثر ارتفاع کولر بادی ${selected.maxCoolerHeight}mm است.`);
+    if (selected.formFactor.includes('Mini-ITX') && selected.formFactor.length === 1) {
+      lines.push(`چون کیس Mini-ITX است، فقط مادربردهای Mini-ITX قابل انتخاب خواهند بود و فضای داخلی محدودتره — برای سیستم جمع‌وجور عالیه، ولی ارتقای آینده سخت‌تر می‌شه.`);
+    } else if (selected.maxGpuLength < 320) {
+      lines.push(`طول GPU محدود است؛ کارت‌های خیلی بلند (مثل بعضی مدل‌های رده‌بالا) ممکنه جا نشوند. در مرحله کارت گرافیک این محدودیت اعمال می‌شه.`);
+    } else {
+      lines.push(`فضای داخلی مناسبیه و دستت برای انتخاب مادربرد ATX و کارت گرافیک‌های بزرگ بازه.`);
+    }
+    lines.push(`مرحله بعد: <strong>مادربرد</strong> — فقط مدل‌هایی که فرم‌فکتورشون با این کیس جور باشه فعال می‌مونن.`);
+  }
 
+  if (selected && stepKey === 'motherboard') {
+    lines.push(`مادربرد <strong>${selected.name}</strong> (${selected.socket} / ${selected.chipset} / ${selected.ramType}) انتخاب شد.`);
+    lines.push(`از این لحظه فقط پردازنده‌های سوکت <strong>${selected.socket}</strong> و رم‌های <strong>${selected.ramType}</strong> قابل انتخاب‌اند. بقیه کم‌رنگ و غیرفعال می‌شن.`);
+    if (selected.chipset.includes('B650') || selected.chipset.includes('B550') || selected.chipset.includes('B760')) {
+      lines.push(`چیست ${selected.chipset} برای گیمینگ و استفاده روزمره کاملاً کافیه و معمولاً ارزش خرید بهتری نسبت به سری‌های رده‌بالا داره.`);
+    } else if (selected.chipset.includes('X670') || selected.chipset.includes('Z790')) {
+      lines.push(`چیست رده‌بالا انتخاب کردی؛ قابلیت اورکلاک، VRM قوی‌تر و پورت‌های بیشتر داری. اگر بودجه محدودی، شاید نیازی به این سطح نباشه مگر برای اورکلاک یا چند SSD همزمان.`);
+    }
+    if (selected.m2Slots >= 3) {
+      lines.push(`تعداد اسلات M.2 خوبه (${selected.m2Slots} عدد) — برای چند SSD پرسرعت فضای کافی داری.`);
+    }
+    lines.push(`مرحله بعد: <strong>پردازنده</strong> — فقط CPUهای سازگار با سوکت ${selected.socket} نشون داده می‌شن و به هر کدوم امتیاز سازگاری می‌دم.`);
+  }
+
+  if (selected && stepKey === 'cpu') {
+    lines.push(`پردازنده <strong>${selected.name}</strong> (${selected.cores} هسته / ${selected.threads} رشته، امتیاز گیمینگ ${selected.gamingScore || '—'}) انتخاب شد.`);
+    if (selected.gamingScore >= 95) {
+      lines.push(`این یکی از بهترین گزینه‌های گیمینگ بازاره. کش بالا و معماری قوی یعنی در بازی‌های CPU-bound (مثل شبیه‌سازها و بعضی عناوین استراتژی) عملکرد عالی می‌گیری.`);
+    } else if (selected.gamingScore >= 85) {
+      lines.push(`برای گیمینگ ۱۰۸۰p و ۱۴۴۰p انتخاب خیلی خوبیه. تعادل قیمت و عملکردش مناسبه.`);
+    } else if (selected.cores >= 12) {
+      lines.push(`تعداد هسته بالاست — برای رندر، کامپایل، مجازی‌سازی و ادیت ویدیو عالی عمل می‌کنه؛ در گیمینگ خالص ممکنه مدل‌های گیمینگ‌محور کمی بهتر باشن.`);
+    } else {
+      lines.push(`گزینه اقتصادی و کارآمد برای کارهای روزمره و گیمینگ سبک تا متوسط.`);
+    }
+    if (build.motherboard) {
+      lines.push(`با مادربرد ${build.motherboard.name} از نظر سوکت کاملاً سازگاره.`);
+    }
+    lines.push(`مرحله بعد: <strong>کارت گرافیک</strong> — سعی کن سطح GPU رو با قدرت CPU هماهنگ کنی تا گلوگاه ایجاد نشه.`);
+  }
+
+  if (selected && stepKey === 'gpu') {
+    lines.push(`کارت گرافیک <strong>${selected.name}</strong> (${selected.vram}، توان ${selected.tdp}W، امتیاز ${selected.gamingScore || '—'}) انتخاب شد.`);
+    if (build.case && selected.length > build.case.maxGpuLength - 10) {
+      lines.push(`طول کارت نزدیک به سقف کیسه؛ قبل از خرید نهایی حتماً ابعاد را دوباره چک کن.`);
+    }
+    if (build.cpu) {
+      const diff = (selected.gamingScore || 70) - (build.cpu.gamingScore || 70);
+      if (diff > 15) {
+        lines.push(`<strong>هشدار تعادل:</strong> GPU نسبت به CPU خیلی قوی‌تره. در بعضی بازی‌ها پردازنده ممکنه گلوگاه بشه و نذاره از تمام توان کارت استفاده کنی. ارتقای CPU یا انتخاب GPU متعادل‌تر را در نظر بگیر.`);
+      } else if (diff < -15) {
+        lines.push(`<strong>هشدار تعادل:</strong> پردازنده قوی‌تر از کارت گرافیکه. برای استفاده کامل از CPU، GPU قوی‌تری پیشنهاد می‌شه — وگرنه در رزولوشن بالا کارت محدودت می‌کنه.`);
+      } else {
+        lines.push(`تعادل CPU و GPU خوبه؛ هیچ‌کدام به‌طور واضح گلوگاه دیگری نمی‌شه و پولت هدر نمی‌ره.`);
+      }
+    }
+    lines.push(`حداقل پاور پیشنهادی برای این کارت حدود <strong>${selected.recommendedPsu}W</strong> است. در مرحله پاور این عدد را جدی بگیر و حاشیه ایمنی (مثلاً +۱۵۰W) در نظر بگیر.`);
+  }
+
+  if (selected && stepKey === 'ram') {
+    lines.push(`رم <strong>${selected.name}</strong> (${selected.capacity}GB ${selected.type}-${selected.speed}) انتخاب شد.`);
+    if (build.motherboard && selected.type !== build.motherboard.ramType) {
+      lines.push(`نوع رم با مادربرد ناسازگار است — این انتخاب نباید فعال باشد. مادربرد را دوباره بررسی کن.`);
+    } else {
+      if (selected.capacity < 16) {
+        lines.push(`ظرفیت کمتر از ۱۶ گیگ برای گیمینگ و ویندوز امروزی کمه. حداقل ۳۲ گیگ پیشنهاد می‌شه.`);
+      } else if (selected.capacity >= 64) {
+        lines.push(`ظرفیت بالا برای ادیت سنگین، ماشین مجازی و پروژه‌های بزرگ عالیه.`);
+      } else {
+        lines.push(`۳۲ گیگ برای اکثر کاربران گیمینگ و کار روزمره نقطه بهینه است.`);
+      }
+      if (selected.type === 'DDR5' && selected.speed >= 6000) {
+        lines.push(`سرعت ${selected.speed}MHz روی پلتفرم‌های جدید (مخصوصاً AMD) عملکرد خوبی می‌ده.`);
+      }
+    }
+    lines.push(`مرحله بعد: <strong>حافظه ذخیره‌سازی</strong> — یک NVMe پرسرعت برای سیستم و بازی‌ها انتخاب کن.`);
+  }
+
+  if (selected && stepKey === 'storage') {
+    lines.push(`حافظه <strong>${selected.name}</strong> (${selected.capacity}GB، ${selected.type}) انتخاب شد.`);
+    if (selected.type === 'NVMe') {
+      lines.push(`NVMe سرعت بوت و لود بازی را نسبت به SATA و HDD چند برابر بالاتر می‌بره. برای درایو اصلی سیستم بهترین انتخاب است.`);
+    } else if (selected.type === 'HDD') {
+      lines.push(`HDD برای آرشیو و فایل‌های حجیم خوبه، ولی برای ویندوز و بازی‌های اصلی بهتر است یک SSD هم داشته باشی.`);
+    } else {
+      lines.push(`SATA SSD از HDD سریع‌تره ولی از NVMe کندتر. برای بودجه محدود هنوز قابل قبول است.`);
+    }
+    if (selected.capacity < 1000) {
+      lines.push(`ظرفیت کمتر از ۱ ترابایت برای بازی‌های امروزی زود پر می‌شه. اگر فقط یک درایو می‌خری، حداقل ۱–۲ ترابایت در نظر بگیر.`);
+    }
+  }
+
+  if (selected && stepKey === 'psu') {
+    lines.push(`پاور <strong>${selected.name}</strong> (${selected.wattage}W، ${selected.efficiency}) انتخاب شد.`);
+    if (build.gpu) {
+      const head = selected.wattage - build.gpu.recommendedPsu;
+      if (head < 0) {
+        lines.push(`<strong>خطر:</strong> توان پاور از حداقل پیشنهادی کارت گرافیک کمتر است. سیستم ممکن است تحت بار ناپایدار شود یا اصلاً روشن نشود. پاور قوی‌تری انتخاب کن.`);
+      } else if (head < 100) {
+        lines.push(`حاشیه ایمنی کمه. بهتر است حداقل ۱۰۰–۱۵۰ وات بالاتر از حداقل پیشنهادی GPU بگیری تا برای ارتقای آینده و پایداری بهتر آماده باشی.`);
+      } else {
+        lines.push(`حاشیه توان مناسب است (+${head}W نسبت به حداقل GPU). پاور با کیفیت و گواهی ۸۰+ عمر قطعات را هم بهتر حفظ می‌کند.`);
+      }
+    } else {
+      lines.push(`هنوز GPU انتخاب نشده؛ بعد از انتخاب کارت گرافیک دوباره توان پاور را چک کن.`);
+    }
+  }
+
+  if (selected && stepKey === 'cooler') {
+    lines.push(`خنک‌کننده <strong>${selected.name}</strong> (${selected.type}) انتخاب شد.`);
+    if (build.cpu && selected.tdpSupport < build.cpu.tdp) {
+      lines.push(`<strong>هشدار:</strong> توان دفع حرارت کولر از TDP پردازنده کمتر است. ممکن است در بار سنگین دمای بالا و افت فرکانس (تراتلینگ) رخ دهد.`);
+    } else if (build.cpu) {
+      lines.push(`ظرفیت خنک‌کنندگی برای TDP پردازنده کافی به نظر می‌رسد.`);
+    }
+    if (selected.type === 'Air' && build.case && selected.height > build.case.maxCoolerHeight) {
+      lines.push(`ارتفاع کولر از سقف کیس بیشتر است — این ترکیب از نظر فیزیکی جا نمی‌شود.`);
+    }
+    if (selected.type === 'AIO') {
+      lines.push(`AIO ظاهر تمیزتری می‌دهد و برای پردازنده‌های پرمصرف مناسب‌تر است، ولی نگهداری و احتمال نشتی را هم در نظر بگیر.`);
+    }
+  }
+
+  // --- If current step has nothing selected yet, guide the user ---
+  if (!selected && parts.length > 0) {
+    const label = step ? step.label : 'این مرحله';
+    lines.push(`الان در مرحله <strong>${label}</strong> هستی و هنوز چیزی از این دسته انتخاب نشده.`);
+    if (stepKey === 'cpu' && build.motherboard) {
+      lines.push(`فقط پردازنده‌های سوکت ${build.motherboard.socket} فعال‌اند. بقیه به خاطر ناسازگاری با مادربرد غیرفعال شده‌اند.`);
+    } else if (stepKey === 'ram' && build.motherboard) {
+      lines.push(`فقط رم‌های ${build.motherboard.ramType} با این مادربرد سازگارند.`);
+    } else if (stepKey === 'gpu' && build.case) {
+      lines.push(`کارت‌هایی که طولشان از ${build.case.maxGpuLength}mm بیشتر باشد در کیس جا نمی‌شوند و غیرفعال‌اند.`);
+    } else if (stepKey === 'psu' && build.gpu) {
+      lines.push(`حداقل توان پیشنهادی با توجه به GPU فعلی حدود ${build.gpu.recommendedPsu}W است. پاور ضعیف‌تر را انتخاب نکن.`);
+    } else {
+      lines.push(`از لیست زیر یک قطعه سازگار انتخاب کن. قطعات ناسازگار کم‌رنگ و غیرفعال‌اند و با نگه داشتن موس دلیلش را می‌بینی.`);
+    }
+  }
+
+  // --- Global balance / summary when multiple core parts exist ---
+  if (build.cpu && build.gpu) {
+    const diff = (build.gpu.gamingScore || 70) - (build.cpu.gamingScore || 70);
+    if (diff > 15 && stepKey !== 'gpu' && stepKey !== 'cpu') {
+      lines.push(`یادآوری تعادل: GPU فعلی قوی‌تر از CPU است؛ در برخی بازی‌ها ممکن است پردازنده محدودت کند.`);
+    } else if (diff < -15 && stepKey !== 'gpu' && stepKey !== 'cpu') {
+      lines.push(`یادآوری تعادل: CPU قوی‌تر از GPU است؛ برای گیمینگ سنگین، کارت گرافیک نقطه ضعف فعلی سیستم است.`);
+    }
+  }
+
+  if (build.gpu && build.psu && build.psu.wattage < build.gpu.recommendedPsu) {
+    lines.push(`پاور فعلی از حداقل پیشنهادی GPU ضعیف‌تر است — قبل از نهایی کردن بیلد حتماً این را اصلاح کن.`);
+  }
+
+  // --- Overall progress ---
+  const core = ['motherboard', 'cpu', 'gpu'].filter(k => build[k]).length;
+  if (parts.length >= 1 && parts.length < 6) {
+    lines.push(`پیشرفت بیلد: ${parts.length} از ۸ قطعه. هنوز ${8 - parts.length} قطعه باقی مانده.`);
+  }
   if (parts.length >= 7) {
-    if (total > 120000000) return AI_OPINIONS.overkill;
-    if (cpu && gpu && (cpu.gamingScore >= 90 || gpu.gamingScore >= 90)) return AI_OPINIONS.complete_excellent;
-    if (cpu && cpu.cores >= 12) return AI_OPINIONS.workstation;
-    return AI_OPINIONS.complete_excellent;
+    lines.push(`تقریباً کامل شد. مجموع تقریبی: <strong>${formatPrice(total)}</strong>. دکمه اشتراک‌گذاری را بزن تا لینک بیلد را برای دوستت بفرستی، یا به سبد خرید اضافه کن.`);
   }
 
-  if (total < 45000000) return AI_OPINIONS.budget_friendly;
-  if (cpu && gpu && (cpu.gamingScore + gpu.gamingScore) / 2 >= 88) return AI_OPINIONS.gaming_high;
-  return AI_OPINIONS.balanced_mid;
+  return lines.join('<br><br>');
 }
 
 /* ---------- Share Build ---------- */
@@ -395,7 +552,7 @@ function renderSummary() {
   const aiEl = document.getElementById('ai-opinion');
   if (aiEl) {
     aiEl.innerHTML = `
-      <div class="ai-label">نظر هوش مصنوعی PCraft</div>
+      <div class="ai-label">دستیار هوشمند PCraft</div>
       <div class="ai-text">${getAIOpinion()}</div>
     `;
   }
